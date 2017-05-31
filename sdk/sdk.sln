@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "api", "api\api.vcxproj", "{071EF03D-D456-4E93-9A1B-30FFA454E6A1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "apitest", "apitest\apitest.vcxproj", "{31B5DC46-BC7E-4F56-A32A-3224462C0AFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{071EF03D-D456-4E93-9A1B-30FFA454E6A1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{071EF03D-D456-4E93-9A1B-30FFA454E6A1}.Debug|Win32.Build.0 = Debug|Win32
+		{071EF03D-D456-4E93-9A1B-30FFA454E6A1}.Release|Win32.ActiveCfg = Release|Win32
+		{071EF03D-D456-4E93-9A1B-30FFA454E6A1}.Release|Win32.Build.0 = Release|Win32
+		{31B5DC46-BC7E-4F56-A32A-3224462C0AFD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{31B5DC46-BC7E-4F56-A32A-3224462C0AFD}.Debug|Win32.Build.0 = Debug|Win32
+		{31B5DC46-BC7E-4F56-A32A-3224462C0AFD}.Release|Win32.ActiveCfg = Release|Win32
+		{31B5DC46-BC7E-4F56-A32A-3224462C0AFD}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
