@@ -633,7 +633,7 @@ void onMQTTMessage(struct mosquitto *mosq, void *userdata, const struct mosquitt
 			_frameBuffer[decodeLen] = '\0';
 
 			int k1PlainLen = DecodeRSAKeyFile(ps->devPrivKey, (const char *)_frameBuffer, decodeLen, _frameExtraBuffer, sizeof(_frameExtraBuffer));
-			if (k1PlainLen == 0)
+			if (k1PlainLen <= 0)
 			{
 				cJSON_Delete(objPayload);
 				logError(ps->liberrprint, "onMQTTMessage RSADecode k1(%s) failed\n", k1);
@@ -702,7 +702,7 @@ void onMQTTMessage(struct mosquitto *mosq, void *userdata, const struct mosquitt
 			_frameBuffer[decodeLen] = '\0';
 
 			int k3PlainLen = DecodeRSAKeyFile(ps->devPrivKey, (const char *)_frameBuffer, decodeLen, _frameExtraBuffer, sizeof(_frameExtraBuffer));
-			if (k3PlainLen == 0)
+			if (k3PlainLen <= 0)
 			{
 				cJSON_Delete(objPayload);
 				logError(ps->liberrprint, "onMQTTMessage RSADecode k3(%s) failed\n", k3);
