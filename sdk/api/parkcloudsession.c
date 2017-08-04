@@ -38,6 +38,7 @@
 #define MSG_SIGNKEY_LEN     (MSG_SIGNKEYCRC_LEN+MSG_SIGNKEYTMS_LEN)
 #define MAX_MSG_LEN         (16384)
 #define MAX_PAYLOAD_LEN     (MAX_MSG_LEN-384)
+#define MAX_ATTACH_TIMEOUT  (3)
 #define MAX_RECV_TIMEOUT    (60)
 
 #define CLOUD_ATTACH_TOPIC  ("/service/attach/v1")
@@ -74,6 +75,7 @@ struct sParkCloudSession
 	int mqttlooprun;
 	pthread_t mqttloopthread;
 
+	uint32_t lastattachtime;
 	uint32_t lastrecvtime;
 };
 
@@ -507,27 +509,35 @@ void *loopMQTT(void *param)
 	logInfo(ps->libinfoprint, "start mosquitto_loop\n");
 	unsigned int count = 0;
 	const unsigned int CHECKTIME = 15;
+
 	while ( ps->mqttlooprun ){
 		mosquitto_loop(ps->mosq, 1000, 1);
+		uint32_t now = epochSeconds();
 		count++;
-		if (count%CHECKTIME == 0)
-		{
+		//if (count%CHECKTIME == 0)
+		//{
 			if (!ps->cloudattached)
 			{
-				logInfo(ps->libinfoprint, "mosquitto_loop retry attach cloud for detached\n");
-				sendAttachMessage(ps, NULL);
-			}
-			else
-			{
-				uint32_t now = epochSeconds();
-				if ((now - ps->lastrecvtime) > MAX_RECV_TIMEOUT)
+				if ((now - ps->lastattachtime) >= MAX_ATTACH_TIMEOUT)
 				{
-					logInfo(ps->libinfoprint, "mosquitto_loop retry attach cloud for receive timeout\n");
+					ps->lastattachtime = now;
+					logInfo(ps->libinfoprint, "mosquitto_loop retry attach cloud for detached\n");
 					sendAttachMessage(ps, NULL);
 				}
 			}
-				
-		}
+			else
+			{
+				if ((now - ps->lastrecvtime) > MAX_RECV_TIMEOUT)
+				{
+					if ((now - ps->lastattachtime) >= MAX_ATTACH_TIMEOUT)
+					{
+						ps->lastattachtime = now;
+						logInfo(ps->libinfoprint, "mosquitto_loop retry attach cloud for receive timeout\n");
+						sendAttachMessage(ps, NULL);
+					}
+				}
+			}
+		//}
 	}
 	logInfo(ps->libinfoprint, "exit mosquitto_loop\n");
 	return NULL;
@@ -556,8 +566,6 @@ void onMQTTConnect(struct mosquitto *mosq, void *userdata, int reason) {
 	ps->cloudattached = 0;
 
 	mosquitto_subscribe(ps->mosq, NULL, ps->topic, 0);
-	
-	sendAttachMessage(ps, NULL);
 }
 
 void onMQTTDisconnect(struct mosquitto *mosq, void *userdata, int reason) {
@@ -723,6 +731,7 @@ void onMQTTMessage(struct mosquitto *mosq, void *userdata, const struct mosquitt
 			if (objToken && objSignKey)
 			{
 				ps->cloudattached = 1;
+				ps->lastattachtime = 0;
 				strcpy(ps->token, objToken->valuestring);
 				strcpy(ps->signkey, objSignKey->valuestring);
 				logInfo(ps->libinfoprint, "onMQTTMessage cJSON_Parse k3 success with token:%s signkey:%s\n", ps->token, ps->signkey);
@@ -893,6 +902,7 @@ e_parkcloudsession_errno internalCreateSession(parkCloudSession *pps,
 	ps->mqttconnected = 0;
 	ps->cloudattached = 0;
 	ps->mqttlooprun = 0;
+	ps->lastattachtime = 0;
 	ps->lastrecvtime = 0;
 	
 	char clientid[MAX_VENDOR_LEN + MAX_SN_LEN];

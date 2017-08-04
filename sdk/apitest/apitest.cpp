@@ -27,18 +27,19 @@ int main(int argc, char* argv[])
 	e_parkcloudsession_errno eno;
 	parkCloudSession s;
 	s_parkcloudsession_para p;
+		
 	p.vendor = "jshz";
-	p.sn = "9840bb1f5ca5";
+	p.sn = "b827eb33d25e/1";
 	p.version = "1.0";
 	p.devprivkeyfile = "../key/mcu_priv_key.pem";
 	p.cloudpubkeyfile = "../key/cloud_pub_key.pem";
-	p.mqttaddr = "116.62.81.201";
+	p.mqttaddr = "clouddev.parkingquickly.com";
 	p.mqttport = 1883;
 	p.mqttuser = "eparkingpartner";
 	p.mqttpwd = "jiangsu_huizeit_d6b47f42";
 	p.liberrprint = 1;
-	p.libinfoprint = 0;
-
+	p.libinfoprint = 1;
+	
 	eno = createSession(&s, &p, onMessage, NULL);
 	if (eno == E_SUCC)
 	{
