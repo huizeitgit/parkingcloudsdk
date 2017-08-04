@@ -507,15 +507,11 @@ void *loopMQTT(void *param)
 	parkCloudSession ps = (parkCloudSession)param;
 
 	logInfo(ps->libinfoprint, "start mosquitto_loop\n");
-	unsigned int count = 0;
-	const unsigned int CHECKTIME = 15;
-
+		
 	while ( ps->mqttlooprun ){
 		mosquitto_loop(ps->mosq, 1000, 1);
 		uint32_t now = epochSeconds();
-		count++;
-		//if (count%CHECKTIME == 0)
-		//{
+		
 			if (!ps->cloudattached)
 			{
 				if ((now - ps->lastattachtime) >= MAX_ATTACH_TIMEOUT)
@@ -537,7 +533,6 @@ void *loopMQTT(void *param)
 					}
 				}
 			}
-		//}
 	}
 	logInfo(ps->libinfoprint, "exit mosquitto_loop\n");
 	return NULL;
